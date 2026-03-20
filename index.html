@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Out of the box</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5EFE0;
+      --orange: #E8541A;
+      --deep: #1A1208;
+      --warm: #C94A10;
+      --muted: #8C7B60;
+      --accent: #F5C842;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--deep);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.5;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 4rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--deep);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 88vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 0 4rem 4rem;
+      gap: 4rem;
+      position: relative;
+    }
+
+    /* big decorative circle */
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56vw;
+      height: 56vw;
+      max-width: 700px;
+      max-height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, var(--orange) 0%, var(--warm) 60%, #7a2200 100%);
+      z-index: 0;
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50%       { transform: translateY(-50%) scale(1.03); }
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 2;
+      animation: fadeUp 1s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 2rem;
+      height: 2px;
+      background: var(--orange);
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(4rem, 7vw, 7.5rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      color: var(--deep);
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--orange);
+    }
+
+    .tagline {
+      margin-top: 2.2rem;
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 420px;
+    }
+
+    .tagline strong {
+      color: var(--deep);
+      font-weight: 500;
+    }
+
+    .cta-row {
+      margin-top: 2.8rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 1s 0.2s ease both;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      padding: 0.9rem 2rem;
+      border: none;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--warm); transform: translateY(-2px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--deep);
+      padding: 0.9rem 2rem;
+      border: 1.5px solid var(--deep);
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-ghost:hover { background: var(--deep); color: var(--cream); transform: translateY(-2px); }
+
+    /* ── floating toy icons ── */
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+      height: 420px;
+      animation: fadeUp 1s 0.15s ease both;
+    }
+
+    .toy {
+      position: absolute;
+      font-size: 5rem;
+      animation: float linear infinite;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.18));
+      user-select: none;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(0)   rotate(0deg); }
+      25%  { transform: translateY(-14px) rotate(4deg); }
+      50%  { transform: translateY(0)   rotate(0deg); }
+      75%  { transform: translateY(-8px)  rotate(-4deg); }
+      100% { transform: translateY(0)   rotate(0deg); }
+    }
+
+    .toy:nth-child(1) { top: 10%; left: 55%; font-size: 6rem; animation-duration: 6s; animation-delay: 0s; }
+    .toy:nth-child(2) { top: 55%; left: 20%; font-size: 4.5rem; animation-duration: 7s; animation-delay: 1.2s; }
+    .toy:nth-child(3) { top: 15%; left: 15%; font-size: 3.8rem; animation-duration: 5.5s; animation-delay: 0.5s; }
+    .toy:nth-child(4) { top: 65%; left: 65%; font-size: 5rem; animation-duration: 6.5s; animation-delay: 2s; }
+    .toy:nth-child(5) { top: 38%; left: 42%; font-size: 3.2rem; animation-duration: 8s; animation-delay: 0.8s; }
+
+    /* ── STATS STRIP ── */
+    .stats {
+      background: var(--deep);
+      color: var(--cream);
+      padding: 3rem 4rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      position: relative;
+      z-index: 5;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245,239,224,0.55);
+      margin-top: 0.4rem;
+    }
+
+    /* ── HOW WE WORK ── */
+    .section {
+      padding: 7rem 4rem;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.8rem;
+    }
+
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 480px;
+    }
+
+    .steps {
+      margin-top: 4rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .step {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2.4rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+    .step:hover { transform: translateY(-6px); }
+
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--orange);
+    }
+
+    .step-num {
+      font-family: 'Fraunces', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .step-icon { font-size: 2.4rem; margin-bottom: 1rem; }
+
+    .step h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      color: var(--deep);
+    }
+
+    .step p {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    /* ── DONATE SECTION ── */
+    .donate-section {
+      margin: 0 4rem 7rem;
+      background: var(--orange);
+      border-radius: 28px;
+      padding: 5rem 5rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .donate-section::after {
+      content: '🎁';
+      position: absolute;
+      right: 12rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9rem;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .donate-section h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: #fff;
+      letter-spacing: -0.03em;
+    }
+
+    .donate-section p {
+      margin-top: 1rem;
+      color: rgba(255,255,255,0.75);
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 480px;
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--orange);
+      padding: 1rem 2.4rem;
+      border: none;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-white:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,18,8,0.65);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--cream);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.2rem; right: 1.4rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--orange); }
+
+    .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    .modal h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--deep);
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.02em;
+    }
+
+    .modal p {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    .modal p strong { color: var(--deep); }
+
+    .modal-divider {
+      height: 1px;
+      background: rgba(26,18,8,0.1);
+      margin: 1.4rem 0;
+    }
+
+    .modal-credit {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(26,18,8,0.1);
+      padding: 2.5rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer .logo { font-size: 1rem; }
+
+    footer p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem 2rem; }
+      .hero { grid-template-columns: 1fr; padding: 2rem 2rem 4rem; min-height: auto; gap: 2rem; }
+      .hero::after { display: none; }
+      .hero-visual { height: 260px; }
+      .stats { padding: 2.5rem 2rem; }
+      .section { padding: 5rem 2rem; }
+      .steps { grid-template-columns: 1fr; }
+      .donate-section { grid-template-columns: 1fr; margin: 0 2rem 5rem; padding: 3rem 2.5rem; }
+      footer { padding: 2rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo">Out of the box</a>
+    <ul class="nav-links">
+      <li><a href="#">Como funciona</a></li>
+      <li><a href="#">A nossa missão</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+    <a href="#" class="btn-primary">Doar agora</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">Iniciativa solidária</p>
+      <h1>Out of<br/>the <em>box</em></h1>
+      <p class="tagline">
+        Recolhemos brinquedos e levamo-los até às crianças que mais precisam —
+        porque <strong>todas as crianças merecem brincar.</strong>
+      </p>
+      <div class="cta-row">
+        <a href="doar.html" class="btn-primary">Quero doar</a>
+        <button onclick="document.getElementById('modal').classList.add('open')" class="btn-ghost">Saber mais</button>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <span class="toy">🧸</span>
+      <span class="toy">🎮</span>
+      <span class="toy">🚂</span>
+      <span class="toy">🎨</span>
+      <span class="toy">⭐</span>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">2 400+</div>
+      <div class="stat-label">Brinquedos doados</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">870</div>
+      <div class="stat-label">Crianças abrangidas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">34</div>
+      <div class="stat-label">Parceiros locais</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Concelhos</div>
+    </div>
+  </div>
+
+  <!-- HOW WE WORK -->
+  <section class="section">
+    <p class="section-label">Como funcionamos</p>
+    <h2 class="section-title">Um processo simples, um impacto real</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">📦</div>
+        <div class="step-num">01</div>
+        <h3>Recolhemos</h3>
+        <p>Recebemos doações de brinquedos usados ou novos de famílias, escolas e empresas em todo o país. Qualquer brinquedo em bom estado é bem-vindo.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">🔍</div>
+        <div class="step-num">02</div>
+        <h3>Selecionamos</h3>
+        <p>Cada brinquedo é higienizado e verificado pela nossa equipa de voluntários para garantir que chega em perfeitas condições às crianças.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">🎁</div>
+        <div class="step-num">03</div>
+        <h3>Entregamos</h3>
+        <p>Em parceria com instituições locais, levamos os brinquedos diretamente às crianças em situação de vulnerabilidade, com carinho e alegria.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DONATE CTA -->
+  <div class="donate-section">
+    <div>
+      <h2>O teu brinquedo pode mudar o dia de uma criança.</h2>
+      <p>Tem brinquedos que já não são usados em casa? Doa-os e ajuda-nos a espalhar alegria por quem mais precisa. É fácil, é rápido e faz toda a diferença.</p>
+    </div>
+    <a href="#" class="btn-white">Fazer uma doação →</a>
+  </div>
+
+  <footer>
+    <a href="#" class="logo">Out of the box</a>
+    <p>Feito com ❤️ por <strong>Bussineslag_guy</strong> (Guilherme Sousa)</p>
+    <p>© 2025 Out of the box. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal">
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+      <div class="modal-icon">🌍</div>
+      <h3>Sobre nós</h3>
+      <p>
+        Somos um grupo de pessoas da <strong>Escola Fragateiro</strong> com um objetivo simples mas poderoso —
+        <strong>mudar o mundo para cada criança que precisa e não tem.</strong>
+        Acreditamos que todas as crianças merecem ter acesso a brinquedos, alegria e infância digna,
+        independentemente das suas circunstâncias. É por isso que fazemos o que fazemos.
+      </p>
+      <div class="modal-divider"></div>
+      <p class="modal-credit">Feito com 💛 por Bussineslag_guy (Guilherme Sousa) &amp; equipa — Escola Fragateiro</p>
+    </div>
+  </div>
+
+</body>
+</html>
