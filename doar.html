@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quero Doar — Out of the box</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --cream: #F5EFE0; --orange: #E8541A; --deep: #1A1208; --warm: #C94A10; --muted: #8C7B60; --accent: #F5C842; }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--cream); color: var(--deep); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 999; opacity: 0.5; }
+
+    /* NAV */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 2rem 4rem; position: relative; z-index: 10; }
+    .logo { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--deep); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+    .nav-back:hover { color: var(--orange); }
+
+    /* HERO */
+    .page-hero { padding: 4rem 4rem 3rem; position: relative; }
+    .eyebrow { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+    .eyebrow::before { content: ''; display: inline-block; width: 2rem; height: 2px; background: var(--orange); }
+    .page-title { font-family: 'Fraunces', serif; font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; color: var(--deep); }
+    .page-title em { font-style: italic; color: var(--orange); }
+    .page-subtitle { margin-top: 1.2rem; font-size: 1rem; color: var(--muted); max-width: 500px; line-height: 1.7; }
+
+    /* LOCATION BANNER */
+    .location-banner { margin: 0 4rem 2rem; background: var(--deep); border-radius: 16px; padding: 1.2rem 1.8rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: opacity 0.2s; }
+    .location-banner:hover { opacity: 0.9; }
+    .location-banner.found { background: #1a3a1a; cursor: default; }
+    .location-banner-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .location-banner-text { flex: 1; }
+    .location-banner-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: #fff; }
+    .location-banner-sub { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-top: 0.2rem; }
+    .location-banner-btn { background: var(--orange); color: #fff; border: none; border-radius: 100px; padding: 0.5rem 1.2rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+
+    /* NEAREST CARD */
+    .nearest-section { margin: 0 4rem 2rem; }
+    .nearest-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.8rem; }
+    .nearest-card { background: var(--orange); border-radius: 20px; padding: 1.8rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+    .nearest-icon { font-size: 3rem; }
+    .nearest-name { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; color: #fff; }
+    .nearest-address { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin-top: 0.3rem; }
+    .nearest-dist { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; color: var(--accent); margin-left: auto; white-space: nowrap; }
+    .nearest-dist span { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 400; color: rgba(255,255,255,0.6); display: block; text-align: right; }
+
+    /* POSTS GRID */
+    .posts-section { padding: 2rem 4rem 6rem; }
+    .posts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .posts-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; }
+    .btn-add-post { background: var(--orange); color: #fff; border: none; border-radius: 100px; padding: 0.7rem 1.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 0.4rem; transition: background 0.2s, transform 0.2s; }
+    .btn-add-post:hover { background: var(--warm); transform: translateY(-2px); }
+
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+
+    .post-card { background: #fff; border-radius: 20px; padding: 1.8rem; position: relative; transition: transform 0.3s; overflow: hidden; }
+    .post-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--orange); }
+    .post-card:hover { transform: translateY(-4px); }
+    .post-card.nearest-highlight::before { background: #27ae60; }
+    .post-card.nearest-highlight { box-shadow: 0 0 0 2px #27ae60; }
+
+    .post-card-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+    .post-card-name { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; color: var(--deep); margin-bottom: 0.3rem; }
+    .post-card-address { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.8rem; }
+    .post-card-note { font-size: 0.82rem; color: var(--muted); font-style: italic; border-top: 1px solid rgba(26,18,8,0.07); padding-top: 0.8rem; margin-top: 0.4rem; }
+    .post-card-dist { display: inline-block; background: rgba(232,84,26,0.1); color: var(--orange); font-size: 0.78rem; font-weight: 600; border-radius: 100px; padding: 0.25rem 0.7rem; margin-top: 0.5rem; }
+    .post-card-dist.close { background: rgba(39,174,96,0.1); color: #27ae60; }
+
+    .post-card-delete { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1rem; cursor: pointer; color: var(--muted); opacity: 0; transition: opacity 0.2s, color 0.2s; }
+    .post-card:hover .post-card-delete { opacity: 1; }
+    .post-card-delete:hover { color: #c0392b; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 5rem 2rem; }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; color: var(--deep); margin-bottom: 0.5rem; }
+    .empty-sub { font-size: 0.95rem; color: var(--muted); }
+
+    /* MODALS */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,8,0.65); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--cream); border-radius: 24px; padding: 3rem; max-width: 480px; width: 90%; position: relative; animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both; max-height: 90vh; overflow-y: auto; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+    .modal-close { position: absolute; top: 1.2rem; right: 1.4rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
+    .modal-close:hover { color: var(--orange); }
+    .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .modal h3 { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; color: var(--deep); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .modal p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+
+    .field-label { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; margin-top: 1rem; display: block; }
+    .field-input { width: 100%; padding: 0.85rem 1.2rem; border: 1.5px solid rgba(26,18,8,0.15); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: #fff; color: var(--deep); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--orange); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .btn-submit { margin-top: 1.5rem; width: 100%; background: var(--orange); color: #fff; padding: 0.9rem; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-submit:hover { background: var(--warm); }
+    .form-error { color: #c0392b; font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+    .form-error.show { display: block; }
+
+    /* LOGIN MODAL */
+    .admin-error { color: #c0392b; font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(26,18,8,0.1); padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    footer p { font-size: 0.78rem; color: var(--muted); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem 2rem; }
+      .page-hero { padding: 2rem 2rem 2rem; }
+      .location-banner { margin: 0 2rem 1.5rem; }
+      .nearest-section { margin: 0 2rem 1.5rem; }
+      .posts-section { padding: 1.5rem 2rem 4rem; }
+      footer { padding: 1.5rem 2rem; }
+      .nearest-dist { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="logo">Out of the box</a>
+    <a href="index.html" class="nav-back">← Voltar</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <p class="eyebrow">Pontos de recolha</p>
+    <h1 class="page-title">Onde <em>doar</em></h1>
+    <p class="page-subtitle">Encontra a cabana mais perto de ti e deixa o teu donativo. Cada brinquedo conta!</p>
+  </div>
+
+  <!-- LOCATION BANNER -->
+  <div class="location-banner" id="location-banner" onclick="requestLocation()">
+    <div class="location-banner-icon">📍</div>
+    <div class="location-banner-text">
+      <div class="location-banner-title" id="banner-title">Ativar localização</div>
+      <div class="location-banner-sub" id="banner-sub">Clica para encontrar a cabana mais perto de ti</div>
+    </div>
+    <button class="location-banner-btn" id="banner-btn">Ativar</button>
+  </div>
+
+  <!-- NEAREST POST (hidden until location found) -->
+  <div class="nearest-section" id="nearest-section" style="display:none;">
+    <p class="nearest-label">📍 Mais perto de ti</p>
+    <div class="nearest-card">
+      <div class="nearest-icon">🏕️</div>
+      <div>
+        <div class="nearest-name" id="nearest-name">—</div>
+        <div class="nearest-address" id="nearest-address">—</div>
+      </div>
+      <div class="nearest-dist" id="nearest-dist">—<span>distância</span></div>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div class="posts-section">
+    <div class="posts-header">
+      <h2 class="posts-title">Todas as cabanas</h2>
+      <button class="btn-add-post" id="btn-add" style="display:none;" onclick="openModal('modal-add')">＋ Adicionar</button>
+    </div>
+    <div class="posts-grid" id="posts-grid">
+      <!-- filled by JS -->
+    </div>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <div class="empty-icon">🏕️</div>
+      <div class="empty-title">Ainda sem cabanas</div>
+      <div class="empty-sub">O admin ainda não adicionou nenhum ponto de recolha.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Out of the box</p>
+    <p>Programação: <strong>Bussineslag_guy</strong> (Guilherme Sousa)</p>
+  </footer>
+
+  <!-- MODAL: ADD POST (admin only) -->
+  <div class="modal-overlay" id="modal-add" onclick="if(event.target===this)closeModal('modal-add')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-add')">✕</button>
+      <div class="modal-icon">🏕️</div>
+      <h3>Nova cabana</h3>
+      <p>Adiciona um novo ponto de recolha. As coordenadas são usadas para calcular a distância.</p>
+
+      <label class="field-label">Nome da cabana</label>
+      <input class="field-input" type="text" id="add-name" placeholder="ex: Cabana do Parque" />
+
+      <label class="field-label">Morada</label>
+      <input class="field-input" type="text" id="add-address" placeholder="ex: Rua das Flores 12, Lisboa" />
+
+      <label class="field-label">Nota (opcional)</label>
+      <input class="field-input" type="text" id="add-note" placeholder="ex: Aberta das 9h às 18h" />
+
+      <label class="field-label">Coordenadas (para distância)</label>
+      <div class="field-row">
+        <input class="field-input" type="text" id="add-lat" placeholder="Latitude ex: 38.7169" />
+        <input class="field-input" type="text" id="add-lng" placeholder="Longitude ex: -9.1395" />
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem;">💡 Vai a <a href="https://maps.google.com" target="_blank" style="color:var(--orange)">Google Maps</a>, clica no local e copia as coordenadas.</p>
+
+      <p class="form-error" id="add-error">Preenche pelo menos o nome e a morada.</p>
+      <button class="btn-submit" onclick="submitPost()">Adicionar cabana</button>
+    </div>
+  </div>
+
+  <!-- MODAL: LOGIN (for admin) -->
+  <div class="modal-overlay" id="modal-login" onclick="if(event.target===this)closeModal('modal-login')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-login')">✕</button>
+      <div class="modal-icon">🔒</div>
+      <h3>Área Admin</h3>
+      <p>Introduz as tuas credenciais para adicionar ou remover cabanas.</p>
+      <label class="field-label">Email</label>
+      <input class="field-input" type="email" id="login-email" placeholder="email..." />
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="login-pass" placeholder="password..." />
+      <p class="admin-error" id="login-error">Email ou password incorretos.</p>
+      <button class="btn-submit" onclick="doLogin()">Entrar</button>
+    </div>
+  </div>
+
+  <script>
+    // ── CONFIG ──
+    const DB_URL      = 'https://outofthebox-bd52f-default-rtdb.europe-west1.firebasedatabase.app';
+    const POSTS_PATH  = DB_URL + '/posts.json';
+    const ADMIN_EMAIL = 'guiclarosousa61@gmail.com';
+    const ADMIN_PASS  = 'Welovehelping@2020';
+
+    let allPosts    = [];
+    let userLat     = null;
+    let userLng     = null;
+
+    // ── COOKIES ──
+    function setCookie(n, v, d) { const x = new Date(); x.setTime(x.getTime() + d*864e5); document.cookie = n+'='+v+';expires='+x.toUTCString()+';path=/'; }
+    function getCookie(n) { const m = document.cookie.match(new RegExp('(^| )'+n+'=([^;]+)')); return m ? m[2] : null; }
+    function deleteCookie(n) { document.cookie = n+'=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/'; }
+    function isAdmin() { return getCookie('admin_ok') === '1'; }
+
+    // ── MODALS ──
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // ── FIREBASE ──
+    async function fetchPosts() {
+      try {
+        const res = await fetch(POSTS_PATH);
+        const data = await res.json();
+        if (!data) return [];
+        return Object.entries(data).map(([id, val]) => ({ id, ...val }));
+      } catch(e) { return []; }
+    }
+
+    async function addPost(post) {
+      await fetch(POSTS_PATH.replace('.json', `/${Date.now()}.json`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(post)
+      });
+    }
+
+    async function deletePost(id) {
+      await fetch(`${DB_URL}/posts/${id}.json`, { method: 'DELETE' });
+    }
+
+    // ── DISTANCE (Haversine) ──
+    function calcDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function formatDist(km) {
+      if (km < 1) return Math.round(km * 1000) + ' m';
+      return km.toFixed(1) + ' km';
+    }
+
+    // ── RENDER ──
+    function renderPosts() {
+      const grid = document.getElementById('posts-grid');
+      const empty = document.getElementById('empty-state');
+      grid.innerHTML = '';
+
+      if (allPosts.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      // sort by distance if we have location
+      let sorted = [...allPosts];
+      if (userLat !== null) {
+        sorted = sorted.map(p => ({
+          ...p,
+          dist: (p.lat && p.lng) ? calcDistance(userLat, userLng, parseFloat(p.lat), parseFloat(p.lng)) : Infinity
+        })).sort((a, b) => a.dist - b.dist);
+      }
+
+      sorted.forEach((post, i) => {
+        const isNearest = userLat !== null && i === 0 && post.dist !== Infinity;
+        const card = document.createElement('div');
+        card.className = 'post-card' + (isNearest ? ' nearest-highlight' : '');
+        card.innerHTML = `
+          <div class="post-card-icon">🏕️</div>
+          <div class="post-card-name">${post.name}${isNearest ? ' ⭐' : ''}</div>
+          <div class="post-card-address">${post.address}</div>
+          ${post.note ? `<div class="post-card-note">${post.note}</div>` : ''}
+          ${post.dist !== undefined && post.dist !== Infinity ? `<span class="post-card-dist ${post.dist < 2 ? 'close' : ''}">${formatDist(post.dist)} de distância</span>` : ''}
+          ${isAdmin() ? `<button class="post-card-delete" onclick="removePost('${post.id}', event)" title="Apagar">🗑️</button>` : ''}
+        `;
+        grid.appendChild(card);
+      });
+
+      // update nearest banner
+      if (userLat !== null && sorted[0] && sorted[0].dist !== Infinity) {
+        showNearest(sorted[0]);
+      }
+    }
+
+    function showNearest(post) {
+      document.getElementById('nearest-section').style.display = 'block';
+      document.getElementById('nearest-name').textContent = post.name;
+      document.getElementById('nearest-address').textContent = post.address;
+      document.getElementById('nearest-dist').innerHTML = formatDist(post.dist) + '<span>de distância</span>';
+    }
+
+    // ── LOCATION ──
+    function requestLocation() {
+      if (userLat !== null) return;
+      const banner = document.getElementById('location-banner');
+      document.getElementById('banner-title').textContent = 'A obter localização...';
+      document.getElementById('banner-sub').textContent = 'Aguarda um momento';
+      document.getElementById('banner-btn').textContent = '⏳';
+
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          banner.classList.add('found');
+          banner.onclick = null;
+          document.getElementById('banner-title').textContent = 'Localização ativa ✅';
+          document.getElementById('banner-sub').textContent = 'A mostrar as cabanas mais próximas';
+          document.getElementById('banner-btn').style.display = 'none';
+          renderPosts();
+        },
+        () => {
+          document.getElementById('banner-title').textContent = 'Localização não disponível';
+          document.getElementById('banner-sub').textContent = 'Não foi possível obter a tua localização';
+          document.getElementById('banner-btn').textContent = 'Tentar de novo';
+        }
+      );
+    }
+
+    // ── ADMIN ──
+    function checkAdminUI() {
+      document.getElementById('btn-add').style.display = isAdmin() ? 'flex' : 'none';
+    }
+
+    function doLogin() {
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
+      const pass  = document.getElementById('login-pass').value;
+      if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+        setCookie('admin_ok', '1', 30);
+        closeModal('modal-login');
+        checkAdminUI();
+        renderPosts();
+        openModal('modal-add');
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    // ── ADD POST ──
+    function openAddPost() {
+      if (isAdmin()) { openModal('modal-add'); }
+      else { openModal('modal-login'); }
+    }
+
+    async function submitPost() {
+      const name    = document.getElementById('add-name').value.trim();
+      const address = document.getElementById('add-address').value.trim();
+      const note    = document.getElementById('add-note').value.trim();
+      const lat     = document.getElementById('add-lat').value.trim();
+      const lng     = document.getElementById('add-lng').value.trim();
+      const errEl   = document.getElementById('add-error');
+
+      if (!name || !address) { errEl.classList.add('show'); return; }
+      errEl.classList.remove('show');
+
+      const post = { name, address, note, lat, lng };
+      await addPost(post);
+      closeModal('modal-add');
+      document.getElementById('add-name').value = '';
+      document.getElementById('add-address').value = '';
+      document.getElementById('add-note').value = '';
+      document.getElementById('add-lat').value = '';
+      document.getElementById('add-lng').value = '';
+      allPosts = await fetchPosts();
+      renderPosts();
+    }
+
+    // ── DELETE POST ──
+    async function removePost(id, e) {
+      e.stopPropagation();
+      if (!confirm('Tens a certeza que queres apagar esta cabana?')) return;
+      await deletePost(id);
+      allPosts = await fetchPosts();
+      renderPosts();
+    }
+
+    // ── ENTER KEYS ──
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+      document.getElementById('login-pass').addEventListener('keydown',  e => { if(e.key==='Enter') doLogin(); });
+
+      checkAdminUI();
+      allPosts = await fetchPosts();
+      renderPosts();
+    });
+  </script>
+
+</body>
+</html>
