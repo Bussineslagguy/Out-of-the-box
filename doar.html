@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quero Doar — Out of the box</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --cream: #F5EFE0; --orange: #E8541A; --deep: #1A1208; --warm: #C94A10; --muted: #8C7B60; --accent: #F5C842; }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--cream); color: var(--deep); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 999; opacity: 0.5; }
+
+    /* NAV */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 2rem 4rem; position: relative; z-index: 10; }
+    .logo { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--deep); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; font-weight: 500; text-decoration: none; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+    .nav-back:hover { color: var(--orange); }
+
+    /* HERO */
+    .page-hero { padding: 4rem 4rem 3rem; position: relative; }
+    .eyebrow { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+    .eyebrow::before { content: ''; display: inline-block; width: 2rem; height: 2px; background: var(--orange); }
+    .page-title { font-family: 'Fraunces', serif; font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; color: var(--deep); }
+    .page-title em { font-style: italic; color: var(--orange); }
+    .page-subtitle { margin-top: 1.2rem; font-size: 1rem; color: var(--muted); max-width: 500px; line-height: 1.7; }
+
+    /* LOCATION BANNER */
+    .location-banner { margin: 0 4rem 2rem; background: var(--deep); border-radius: 16px; padding: 1.2rem 1.8rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: opacity 0.2s; }
+    .location-banner:hover { opacity: 0.9; }
+    .location-banner.found { background: #1a3a1a; cursor: default; }
+    .location-banner-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .location-banner-text { flex: 1; }
+    .location-banner-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: #fff; }
+    .location-banner-sub { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-top: 0.2rem; }
+    .location-banner-btn { background: var(--orange); color: #fff; border: none; border-radius: 100px; padding: 0.5rem 1.2rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+
+    /* NEAREST CARD */
+    .nearest-section { margin: 0 4rem 2rem; }
+    .nearest-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.8rem; }
+    .nearest-card { background: var(--orange); border-radius: 20px; padding: 1.8rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+    .nearest-icon { font-size: 3rem; }
+    .nearest-name { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; color: #fff; }
+    .nearest-address { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin-top: 0.3rem; }
+    .nearest-dist { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; color: var(--accent); margin-left: auto; white-space: nowrap; }
+    .nearest-dist span { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 400; color: rgba(255,255,255,0.6); display: block; text-align: right; }
+
+    /* POSTS GRID */
+    .posts-section { padding: 2rem 4rem 6rem; }
+    .posts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .posts-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; }
+    .btn-add-post { background: var(--orange); color: #fff; border: none; border-radius: 100px; padding: 0.7rem 1.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 0.4rem; transition: background 0.2s, transform 0.2s; }
+    .btn-add-post:hover { background: var(--warm); transform: translateY(-2px); }
+
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+
+    .post-card { background: #fff; border-radius: 20px; padding: 1.8rem; position: relative; transition: transform 0.3s; overflow: hidden; }
+    .post-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--orange); }
+    .post-card:hover { transform: translateY(-4px); }
+    .post-card.nearest-highlight::before { background: #27ae60; }
+    .post-card.nearest-highlight { box-shadow: 0 0 0 2px #27ae60; }
+
+    .post-card-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+    .post-card-name { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; color: var(--deep); margin-bottom: 0.3rem; }
+    .post-card-address { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.8rem; }
+    .post-card-note { font-size: 0.82rem; color: var(--muted); font-style: italic; border-top: 1px solid rgba(26,18,8,0.07); padding-top: 0.8rem; margin-top: 0.4rem; }
+    .post-card-dist { display: inline-block; background: rgba(232,84,26,0.1); color: var(--orange); font-size: 0.78rem; font-weight: 600; border-radius: 100px; padding: 0.25rem 0.7rem; margin-top: 0.5rem; }
+    .post-card-dist.close { background: rgba(39,174,96,0.1); color: #27ae60; }
+
+    .post-card-delete { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1rem; cursor: pointer; color: var(--muted); opacity: 0; transition: opacity 0.2s, color 0.2s; }
+    .post-card:hover .post-card-delete { opacity: 1; }
+    .post-card-delete:hover { color: #c0392b; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 5rem 2rem; }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; color: var(--deep); margin-bottom: 0.5rem; }
+    .empty-sub { font-size: 0.95rem; color: var(--muted); }
+
+    /* MODALS */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,8,0.65); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--cream); border-radius: 24px; padding: 3rem; max-width: 480px; width: 90%; position: relative; animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both; max-height: 90vh; overflow-y: auto; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+    .modal-close { position: absolute; top: 1.2rem; right: 1.4rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
+    .modal-close:hover { color: var(--orange); }
+    .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .modal h3 { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; color: var(--deep); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .modal p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+
+    .field-label { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; margin-top: 1rem; display: block; }
+    .field-input { width: 100%; padding: 0.85rem 1.2rem; border: 1.5px solid rgba(26,18,8,0.15); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: #fff; color: var(--deep); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--orange); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .btn-submit { margin-top: 1.5rem; width: 100%; background: var(--orange); color: #fff; padding: 0.9rem; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-submit:hover { background: var(--warm); }
+    .form-error { color: #c0392b; font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+    .form-error.show { display: block; }
+
+    /* LOGIN MODAL */
+    .admin-error { color: #c0392b; font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(26,18,8,0.1); padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    footer p { font-size: 0.78rem; color: var(--muted); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem 2rem; }
+      .page-hero { padding: 2rem 2rem 2rem; }
+      .location-banner { margin: 0 2rem 1.5rem; }
+      .nearest-section { margin: 0 2rem 1.5rem; }
+      .posts-section { padding: 1.5rem 2rem 4rem; }
+      footer { padding: 1.5rem 2rem; }
+      .nearest-dist { display: none; }
+    }
+
+    /* ══ ANIMATIONS & INTERACTIONS ══ */
+
+    /* custom cursor */
+    * { cursor: none !important; }
+    #cursor { position: fixed; width: 12px; height: 12px; background: var(--orange); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width 0.2s, height 0.2s, background 0.2s; mix-blend-mode: multiply; }
+    #cursor-ring { position: fixed; width: 36px; height: 36px; border: 1.5px solid var(--orange); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all 0.12s ease; opacity: 0.5; }
+
+    /* scroll progress */
+    #scroll-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--orange); z-index: 10000; width: 0%; transition: width 0.1s linear; }
+
+    /* scroll reveal */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* page hero animation */
+    .page-hero { animation: fadeUp 0.8s 0.2s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    nav { animation: fadeUp 0.6s 0.05s ease both; }
+
+    /* location banner pulse when idle */
+    .location-banner:not(.found) { animation: bannerPulse 2.5s ease-in-out infinite; }
+    @keyframes bannerPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(232,84,26,0); } 50% { box-shadow: 0 0 0 6px rgba(232,84,26,0.15); } }
+    .location-banner-btn { transition: transform 0.2s, background 0.2s; }
+    .location-banner-btn:hover { transform: scale(1.06); }
+
+    /* nearest card entrance */
+    .nearest-card { animation: slideIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-24px) scale(0.96); } to { opacity: 1; transform: none; } }
+    .nearest-icon { display: inline-block; animation: tentFloat 3s ease-in-out infinite; }
+    @keyframes tentFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(5deg); } }
+
+    /* post cards */
+    .post-card { transition: transform 0.2s ease, box-shadow 0.2s ease; will-change: transform; }
+    .post-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 16px 48px rgba(232,84,26,0.12); }
+    .post-card-icon { display: inline-block; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .post-card:hover .post-card-icon { transform: scale(1.3) rotate(-8deg); }
+    .post-card::after { content: ''; position: absolute; inset: 0; border-radius: 20px; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(232,84,26,0.06) 0%, transparent 70%); pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+    .post-card:hover::after { opacity: 1; }
+
+    /* nearest highlight pulse */
+    .post-card.nearest-highlight { animation: nearestGlow 2s ease-in-out infinite; }
+    @keyframes nearestGlow { 0%,100% { box-shadow: 0 0 0 2px #27ae60; } 50% { box-shadow: 0 0 0 5px rgba(39,174,96,0.3); } }
+
+    /* add button */
+    .btn-add-post { position: relative; overflow: hidden; }
+    .btn-add-post::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 120%, rgba(255,255,255,0.2), transparent 60%); transform: translateY(100%); transition: transform 0.3s; }
+    .btn-add-post:hover::before { transform: translateY(0); }
+
+    /* empty state float */
+    .empty-icon { display: inline-block; animation: emptyFloat 2.5s ease-in-out infinite; }
+    @keyframes emptyFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    /* stagger cards */
+    .post-card { animation: cardIn 0.5s ease both; }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+    /* modal icon bounce */
+    .modal-icon { display: inline-block; animation: iconBounce 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes iconBounce { from { transform: scale(0) rotate(-15deg); } to { transform: scale(1) rotate(0deg); } }
+
+    /* field input focus glow */
+    .field-input:focus { box-shadow: 0 0 0 3px rgba(232,84,26,0.15); }
+
+    /* btn-submit ripple */
+    .btn-submit { position: relative; overflow: hidden; }
+    .btn-submit::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+    .btn-submit:hover::after { transform: scaleX(1); }
+
+    /* logo hover */
+    .logo { transition: transform 0.3s; display: inline-block; }
+    .logo:hover { transform: rotate(-2deg) scale(1.05); }
+    .nav-back { transition: gap 0.2s, color 0.2s; }
+    .nav-back:hover { gap: 0.8rem; }
+
+    /* footer */
+    footer { animation: fadeUp 0.6s 0.1s ease both; }
+
+    /* confetti */
+    .confetti-piece { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 9997; border-radius: 2px; animation: confettiFall var(--dur) ease forwards; }
+    @keyframes confettiFall { 0% { transform: translate(0,0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(720deg); opacity: 0; } }
+
+    /* page title letter stagger */
+    .page-title { overflow: visible; }
+
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div id="scroll-bar"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="logo">Out of the box</a>
+    <a href="index.html" class="nav-back">← Voltar</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <p class="eyebrow">Pontos de recolha</p>
+    <h1 class="page-title">Onde <em>doar</em></h1>
+    <p class="page-subtitle">Encontra a cabana mais perto de ti e deixa o teu donativo. Cada brinquedo conta!</p>
+  </div>
+
+  <!-- LOCATION BANNER -->
+  <div class="location-banner reveal" id="location-banner" onclick="requestLocation()">
+    <div class="location-banner-icon">📍</div>
+    <div class="location-banner-text">
+      <div class="location-banner-title" id="banner-title">Ativar localização</div>
+      <div class="location-banner-sub" id="banner-sub">Clica para encontrar a cabana mais perto de ti</div>
+    </div>
+    <button class="location-banner-btn" id="banner-btn">Ativar</button>
+  </div>
+
+  <!-- NEAREST POST (hidden until location found) -->
+  <div class="nearest-section reveal" id="nearest-section" style="display:none;">
+    <p class="nearest-label">📍 Mais perto de ti</p>
+    <div class="nearest-card">
+      <div class="nearest-icon">🏕️</div>
+      <div>
+        <div class="nearest-name" id="nearest-name">—</div>
+        <div class="nearest-address" id="nearest-address">—</div>
+      </div>
+      <div class="nearest-dist" id="nearest-dist">—<span>distância</span></div>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div class="posts-section">
+    <div class="posts-header reveal">
+      <h2 class="posts-title">Todas as cabanas</h2>
+      <button class="btn-add-post" id="btn-add" style="display:none;" onclick="openModal('modal-add')">＋ Adicionar</button>
+    </div>
+    <div class="posts-grid" id="posts-grid">
+      <!-- filled by JS -->
+    </div>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <div class="empty-icon">🏕️</div>
+      <div class="empty-title">Ainda sem cabanas</div>
+      <div class="empty-sub">O admin ainda não adicionou nenhum ponto de recolha.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Out of the box</p>
+    <p>Programação: <strong>Bussineslag_guy</strong> (Guilherme Sousa)</p>
+  </footer>
+
+  <!-- MODAL: ADD POST (admin only) -->
+  <div class="modal-overlay" id="modal-add" onclick="if(event.target===this)closeModal('modal-add')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-add')">✕</button>
+      <div class="modal-icon">🏕️</div>
+      <h3>Nova cabana</h3>
+      <p>Adiciona um novo ponto de recolha. As coordenadas são usadas para calcular a distância.</p>
+
+      <label class="field-label">Nome da cabana</label>
+      <input class="field-input" type="text" id="add-name" placeholder="ex: Cabana do Parque" />
+
+      <label class="field-label">Morada</label>
+      <input class="field-input" type="text" id="add-address" placeholder="ex: Rua das Flores 12, Lisboa" />
+
+      <label class="field-label">Nota (opcional)</label>
+      <input class="field-input" type="text" id="add-note" placeholder="ex: Aberta das 9h às 18h" />
+
+      <label class="field-label">Coordenadas (para distância)</label>
+      <div class="field-row">
+        <input class="field-input" type="text" id="add-lat" placeholder="Latitude ex: 38.7169" />
+        <input class="field-input" type="text" id="add-lng" placeholder="Longitude ex: -9.1395" />
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem;">💡 Vai a <a href="https://maps.google.com" target="_blank" style="color:var(--orange)">Google Maps</a>, clica no local e copia as coordenadas.</p>
+
+      <p class="form-error" id="add-error">Preenche pelo menos o nome e a morada.</p>
+      <button class="btn-submit" onclick="submitPost()">Adicionar cabana</button>
+    </div>
+  </div>
+
+  <!-- MODAL: LOGIN (for admin) -->
+  <div class="modal-overlay" id="modal-login" onclick="if(event.target===this)closeModal('modal-login')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-login')">✕</button>
+      <div class="modal-icon">🔒</div>
+      <h3>Área Admin</h3>
+      <p>Introduz as tuas credenciais para adicionar ou remover cabanas.</p>
+      <label class="field-label">Email</label>
+      <input class="field-input" type="email" id="login-email" placeholder="email..." />
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="login-pass" placeholder="password..." />
+      <p class="admin-error" id="login-error">Email ou password incorretos.</p>
+      <button class="btn-submit" onclick="doLogin()">Entrar</button>
+    </div>
+  </div>
+
+  <script>
+    // ── CONFIG ──
+    const DB_URL      = 'https://outofthebox-bd52f-default-rtdb.europe-west1.firebasedatabase.app';
+    const POSTS_PATH  = DB_URL + '/posts.json';
+    const ADMIN_EMAIL = 'guiclarosousa61@gmail.com';
+    const ADMIN_PASS  = 'Welovehelping@2020';
+
+    let allPosts    = [];
+    let userLat     = null;
+    let userLng     = null;
+
+    // ── COOKIES ──
+    function setCookie(n, v, d) { const x = new Date(); x.setTime(x.getTime() + d*864e5); document.cookie = n+'='+v+';expires='+x.toUTCString()+';path=/'; }
+    function getCookie(n) { const m = document.cookie.match(new RegExp('(^| )'+n+'=([^;]+)')); return m ? m[2] : null; }
+    function deleteCookie(n) { document.cookie = n+'=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/'; }
+    function isAdmin() { return getCookie('admin_ok') === '1'; }
+
+    // ── MODALS ──
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // ── FIREBASE ──
+    async function fetchPosts() {
+      try {
+        const res = await fetch(POSTS_PATH);
+        const data = await res.json();
+        if (!data) return [];
+        return Object.entries(data).map(([id, val]) => ({ id, ...val }));
+      } catch(e) { return []; }
+    }
+
+    async function addPost(post) {
+      await fetch(POSTS_PATH.replace('.json', `/${Date.now()}.json`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(post)
+      });
+    }
+
+    async function deletePost(id) {
+      await fetch(`${DB_URL}/posts/${id}.json`, { method: 'DELETE' });
+    }
+
+    // ── DISTANCE (Haversine) ──
+    function calcDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function formatDist(km) {
+      if (km < 1) return Math.round(km * 1000) + ' m';
+      return km.toFixed(1) + ' km';
+    }
+
+    // ── RENDER ──
+    function renderPosts() {
+      const grid = document.getElementById('posts-grid');
+      const empty = document.getElementById('empty-state');
+      grid.innerHTML = '';
+
+      if (allPosts.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      // sort by distance if we have location
+      let sorted = [...allPosts];
+      if (userLat !== null) {
+        sorted = sorted.map(p => ({
+          ...p,
+          dist: (p.lat && p.lng) ? calcDistance(userLat, userLng, parseFloat(p.lat), parseFloat(p.lng)) : Infinity
+        })).sort((a, b) => a.dist - b.dist);
+      }
+
+      sorted.forEach((post, i) => {
+        const isNearest = userLat !== null && i === 0 && post.dist !== Infinity;
+        const card = document.createElement('div');
+        card.className = 'post-card' + (isNearest ? ' nearest-highlight' : '');
+        card.style.cursor = 'pointer';
+        const postDist = post.dist;
+        card.addEventListener('click', (e) => { if(!e.target.classList.contains('post-card-delete')) openDetail(post, postDist); });
+        card.innerHTML = `
+          <div class="post-card-icon">🏕️</div>
+          <div class="post-card-name">${post.name}${isNearest ? ' ⭐' : ''}</div>
+          <div class="post-card-address">${post.address}</div>
+          ${post.note ? `<div class="post-card-note">${post.note}</div>` : ''}
+          ${post.dist !== undefined && post.dist !== Infinity ? `<span class="post-card-dist ${post.dist < 2 ? 'close' : ''}">${formatDist(post.dist)} de distância</span>` : ''}
+          ${isAdmin() ? `<button class="post-card-delete" onclick="removePost('${post.id}', event)" title="Apagar">🗑️</button><button class="post-card-delete" style="right:2.8rem" onclick="openEdit(event, '${post.id}')" title="Editar">✏️</button>` : ''}
+        `;
+        grid.appendChild(card);
+      });
+
+      // update nearest banner
+      if (userLat !== null && sorted[0] && sorted[0].dist !== Infinity) {
+        showNearest(sorted[0]);
+      }
+    }
+
+    function showNearest(post) {
+      document.getElementById('nearest-section').style.display = 'block';
+      document.getElementById('nearest-name').textContent = post.name;
+      document.getElementById('nearest-address').textContent = post.address;
+      document.getElementById('nearest-dist').innerHTML = formatDist(post.dist) + '<span>de distância</span>';
+    }
+
+    // ── LOCATION ──
+    function requestLocation() {
+      if (userLat !== null) return;
+      const banner = document.getElementById('location-banner');
+      document.getElementById('banner-title').textContent = 'A obter localização...';
+      document.getElementById('banner-sub').textContent = 'Aguarda um momento';
+      document.getElementById('banner-btn').textContent = '⏳';
+
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          banner.classList.add('found');
+          banner.onclick = null;
+          document.getElementById('banner-title').textContent = 'Localização ativa ✅';
+          document.getElementById('banner-sub').textContent = 'A mostrar as cabanas mais próximas';
+          document.getElementById('banner-btn').style.display = 'none';
+          renderPosts();
+        },
+        () => {
+          document.getElementById('banner-title').textContent = 'Localização não disponível';
+          document.getElementById('banner-sub').textContent = 'Não foi possível obter a tua localização';
+          document.getElementById('banner-btn').textContent = 'Tentar de novo';
+        }
+      );
+    }
+
+    // ── ADMIN ──
+    function checkAdminUI() {
+      document.getElementById('btn-add').style.display = isAdmin() ? 'flex' : 'none';
+    }
+
+    function doLogin() {
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
+      const pass  = document.getElementById('login-pass').value;
+      if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+        setCookie('admin_ok', '1', 30);
+        closeModal('modal-login');
+        checkAdminUI();
+        renderPosts();
+        openModal('modal-add');
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    // ── ADD POST ──
+    function openAddPost() {
+      if (isAdmin()) { openModal('modal-add'); }
+      else { openModal('modal-login'); }
+    }
+
+    async function submitPost() {
+      const name    = document.getElementById('add-name').value.trim();
+      const address = document.getElementById('add-address').value.trim();
+      const note    = document.getElementById('add-note').value.trim();
+      const lat     = document.getElementById('add-lat').value.trim();
+      const lng     = document.getElementById('add-lng').value.trim();
+      const errEl   = document.getElementById('add-error');
+
+      if (!name || !address) { errEl.classList.add('show'); return; }
+      errEl.classList.remove('show');
+
+      const post = { name, address, note, lat, lng };
+      await addPost(post);
+      closeModal('modal-add');
+      document.getElementById('add-name').value = '';
+      document.getElementById('add-address').value = '';
+      document.getElementById('add-note').value = '';
+      document.getElementById('add-lat').value = '';
+      document.getElementById('add-lng').value = '';
+      allPosts = await fetchPosts();
+      renderPosts();
+    }
+
+    // ── DELETE POST ──
+    async function removePost(id, e) {
+      e.stopPropagation();
+      if (!confirm('Tens a certeza que queres apagar esta cabana?')) return;
+      await deletePost(id);
+      allPosts = await fetchPosts();
+      renderPosts();
+    }
+
+
+    // ── DETAIL POPUP ──
+    let currentDetailId = null;
+    function openDetail(post, dist) {
+      currentDetailId = post.id;
+      document.getElementById('detail-name').textContent = post.name;
+      document.getElementById('detail-address').textContent = post.address;
+
+      // nearest badge
+      const isNearest = userLat !== null && dist !== undefined && dist !== Infinity;
+      const sorted = [...allPosts].filter(p => p.lat && p.lng).map(p => ({
+        ...p, dist: calcDistance(userLat, userLng, parseFloat(p.lat), parseFloat(p.lng))
+      })).sort((a, b) => a.dist - b.dist);
+      const nearestId = sorted.length > 0 ? sorted[0].id : null;
+      document.getElementById('detail-nearest-badge').style.display = (isNearest && post.id === nearestId) ? 'block' : 'none';
+
+      // distance
+      if (dist !== undefined && dist !== Infinity) {
+        document.getElementById('detail-dist-row').style.display = 'flex';
+        document.getElementById('detail-dist').textContent = formatDist(dist);
+      } else {
+        document.getElementById('detail-dist-row').style.display = 'none';
+      }
+
+      // note
+      if (post.note) {
+        document.getElementById('detail-note-row').style.display = 'flex';
+        document.getElementById('detail-note').textContent = post.note;
+      } else {
+        document.getElementById('detail-note-row').style.display = 'none';
+      }
+
+      // coords
+      if (post.lat && post.lng) {
+        document.getElementById('detail-coords-row').style.display = 'flex';
+        document.getElementById('detail-coords').textContent = post.lat + ', ' + post.lng;
+        document.getElementById('detail-maps-link').href = `https://www.google.com/maps?q=${post.lat},${post.lng}`;
+        document.getElementById('detail-maps-link').style.display = 'flex';
+      } else {
+        document.getElementById('detail-coords-row').style.display = 'none';
+        document.getElementById('detail-maps-link').href = `https://www.google.com/maps/search/${encodeURIComponent(post.address)}`;
+        document.getElementById('detail-maps-link').style.display = 'flex';
+      }
+
+      document.getElementById('detail-edit-btn').style.display = isAdmin() ? 'block' : 'none';
+      openModal('modal-detail');
+    }
+
+
+    // ── EDIT ──
+    function openEdit(e, id) {
+      e.stopPropagation();
+      const post = allPosts.find(p => p.id === id);
+      if (!post) return;
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-name').value = post.name || '';
+      document.getElementById('edit-address').value = post.address || '';
+      document.getElementById('edit-note').value = post.note || '';
+      document.getElementById('edit-lat').value = post.lat || '';
+      document.getElementById('edit-lng').value = post.lng || '';
+      document.getElementById('edit-error').classList.remove('show');
+      closeModal('modal-detail');
+      openModal('modal-edit');
+    }
+
+    async function submitEdit() {
+      const id      = document.getElementById('edit-id').value;
+      const name    = document.getElementById('edit-name').value.trim();
+      const address = document.getElementById('edit-address').value.trim();
+      const note    = document.getElementById('edit-note').value.trim();
+      const lat     = document.getElementById('edit-lat').value.trim();
+      const lng     = document.getElementById('edit-lng').value.trim();
+      const errEl   = document.getElementById('edit-error');
+      if (!name || !address) { errEl.classList.add('show'); return; }
+      errEl.classList.remove('show');
+      await fetch(`${DB_URL}/posts/${id}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, address, note, lat, lng })
+      });
+      closeModal('modal-edit');
+      allPosts = await fetchPosts();
+      renderPosts();
+    }
+
+
+    // ══ ANIMATIONS JS ══
+
+    // Custom cursor
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => {
+      mx=e.clientX; my=e.clientY;
+      cur.style.left=mx+'px'; cur.style.top=my+'px';
+    });
+    (function animRing(){
+      rx+=(mx-rx)*0.15; ry+=(my-ry)*0.15;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    // Scroll bar
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      document.getElementById('scroll-bar').style.width = pct+'%';
+    });
+
+    // Scroll reveal
+    const revEls = document.querySelectorAll('.reveal');
+    const revObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revObs.unobserve(e.target); }});
+    }, {threshold:0.1});
+    revEls.forEach(el => revObs.observe(el));
+
+    // Card mouse-glow effect
+    document.addEventListener('mousemove', e => {
+      document.querySelectorAll('.post-card').forEach(card => {
+        const r = card.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+        const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+        card.style.setProperty('--mx', x+'%');
+        card.style.setProperty('--my', y+'%');
+      });
+    });
+
+    // Card 3D tilt
+    function addTilt(card) {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left)/r.width  - 0.5;
+        const y = (e.clientY - r.top) /r.height - 0.5;
+        card.style.transform = `perspective(700px) rotateY(${x*10}deg) rotateX(${-y*8}deg) translateY(-6px) scale(1.01)`;
+      });
+      card.addEventListener('mouseleave', () => card.style.transform = '');
+    }
+
+    // Magnetic buttons
+    function addMagnetic(btn) {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const dx = e.clientX-(r.left+r.width/2);
+        const dy = e.clientY-(r.top+r.height/2);
+        btn.style.transform = `translate(${dx*0.28}px,${dy*0.28}px)`;
+      });
+      btn.addEventListener('mouseleave', () => btn.style.transform='');
+    }
+
+    // Confetti
+    function spawnConfetti(x, y, count) {
+      const colors = ['#E8541A','#F5C842','#1A1208','#fff','#C94A10','#8C7B60','#27ae60'];
+      for(let i=0;i<count;i++){
+        const el = document.createElement('div');
+        el.className='confetti-piece';
+        el.style.cssText = `left:${x}px;top:${y}px;background:${colors[Math.floor(Math.random()*colors.length)]};--dx:${(Math.random()-.5)*160}px;--dy:${Math.random()*120+60}px;--dur:${Math.random()*.6+.6}s;border-radius:${Math.random()>0.5?'50%':'2px'}`;
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),1400);
+      }
+    }
+
+    // Re-run after renderPosts so new cards get tilt + magnetic
+    const _origRender = renderPosts;
+    renderPosts = function() {
+      _origRender();
+      setTimeout(() => {
+        document.querySelectorAll('.post-card').forEach((card, i) => {
+          card.style.animationDelay = (i * 0.07) + 's';
+          addTilt(card);
+        });
+        document.querySelectorAll('.btn-submit, .btn-add-post, .location-banner-btn').forEach(addMagnetic);
+      }, 50);
+    };
+
+    // Confetti when a cabana is added
+    const _origSubmit = submitPost;
+    submitPost = async function() {
+      await _origSubmit();
+      spawnConfetti(window.innerWidth/2, window.innerHeight/2, 25);
+    };
+
+    // Confetti when location found
+    const _origReq = requestLocation;
+    requestLocation = function() {
+      _origReq();
+      navigator.geolocation.getCurrentPosition(() => {
+        spawnConfetti(window.innerWidth*.2, window.innerHeight*.3, 20);
+      }, ()=>{});
+    };
+
+    // Nearest card entrance: bounce the tent icon
+    const _origNearest = showNearest;
+    showNearest = function(post) {
+      _origNearest(post);
+      const icon = document.querySelector('.nearest-icon');
+      if(icon){ icon.style.animation='none'; void icon.offsetWidth; icon.style.animation=''; }
+    };
+
+    // Initial magnetic on static buttons
+    document.querySelectorAll('.btn-submit, .btn-add-post, .location-banner-btn').forEach(addMagnetic);
+
+    // ── ENTER KEYS ──
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+      document.getElementById('login-pass').addEventListener('keydown',  e => { if(e.key==='Enter') doLogin(); });
+
+      checkAdminUI();
+      allPosts = await fetchPosts();
+      renderPosts();
+    });
+  </script>
+
+
+
+  <!-- MODAL: EDIT CABANA -->
+  <div class="modal-overlay" id="modal-edit" onclick="if(event.target===this)closeModal('modal-edit')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-edit')">✕</button>
+      <div class="modal-icon">✏️</div>
+      <h3>Editar cabana</h3>
+      <input type="hidden" id="edit-id" />
+      <label class="field-label">Nome da cabana</label>
+      <input class="field-input" type="text" id="edit-name" placeholder="ex: Cabana do Parque" />
+      <label class="field-label">Morada</label>
+      <input class="field-input" type="text" id="edit-address" placeholder="ex: Rua das Flores 12, Lisboa" />
+      <label class="field-label">Nota (opcional)</label>
+      <input class="field-input" type="text" id="edit-note" placeholder="ex: Aberta das 9h às 18h" />
+      <label class="field-label">Coordenadas</label>
+      <div class="field-row">
+        <input class="field-input" type="text" id="edit-lat" placeholder="Latitude ex: 38.7169" />
+        <input class="field-input" type="text" id="edit-lng" placeholder="Longitude ex: -9.1395" />
+      </div>
+      <p class="form-error" id="edit-error">Preenche pelo menos o nome e a morada.</p>
+      <button class="btn-submit" onclick="submitEdit()">Guardar alterações</button>
+    </div>
+  </div>
+
+  <!-- MODAL: CABANA DETAIL -->
+  <div class="modal-overlay" id="modal-detail" onclick="if(event.target===this)closeModal('modal-detail')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+      <div class="modal-icon">🏕️</div>
+      <h3 id="detail-name">—</h3>
+      <div id="detail-nearest-badge" style="display:none;margin-bottom:0.8rem;">
+        <span style="background:rgba(39,174,96,0.12);color:#27ae60;font-size:0.8rem;font-weight:600;border-radius:100px;padding:0.3rem 0.9rem;">⭐ Mais perto de ti</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.8rem;margin-top:0.5rem;">
+        <div id="detail-address-row" style="display:flex;gap:0.8rem;align-items:flex-start;">
+          <span style="font-size:1.3rem;">📍</span>
+          <div>
+            <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Morada</div>
+            <div id="detail-address" style="font-size:0.95rem;color:var(--deep);line-height:1.5;"></div>
+          </div>
+        </div>
+        <div id="detail-dist-row" style="display:none;flex-gap:0.8rem;align-items:center;gap:0.8rem;">
+          <span style="font-size:1.3rem;">🚶</span>
+          <div>
+            <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Distância</div>
+            <div id="detail-dist" style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:900;color:var(--orange);"></div>
+          </div>
+        </div>
+        <div id="detail-note-row" style="display:none;align-items:flex-start;gap:0.8rem;">
+          <span style="font-size:1.3rem;">💬</span>
+          <div>
+            <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Nota</div>
+            <div id="detail-note" style="font-size:0.95rem;color:var(--muted);font-style:italic;line-height:1.5;"></div>
+          </div>
+        </div>
+        <div id="detail-coords-row" style="display:none;align-items:flex-start;gap:0.8rem;">
+          <span style="font-size:1.3rem;">🗺️</span>
+          <div>
+            <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Coordenadas</div>
+            <div id="detail-coords" style="font-size:0.88rem;color:var(--muted);"></div>
+          </div>
+        </div>
+      </div>
+      <button id="detail-edit-btn" style="display:none;width:100%;margin-top:0.8rem;background:var(--deep);color:#fff;padding:0.9rem;border:none;border-radius:12px;font-weight:600;font-size:0.95rem;cursor:pointer;font-family:'DM Sans',sans-serif;" onclick="openEdit(event, currentDetailId)">✏️ Editar esta cabana</button>
+      <a id="detail-maps-link" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:1.5rem;background:var(--orange);color:#fff;padding:0.9rem;border-radius:12px;text-decoration:none;font-weight:600;font-size:0.95rem;transition:background 0.2s;" onmouseover="this.style.background='var(--warm)'" onmouseout="this.style.background='var(--orange)'">
+        🗺️ Abrir no Google Maps
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
